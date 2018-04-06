@@ -5,8 +5,8 @@
 typedef struct trie TRIE;
 
 struct trie {
-	int val;
-	TRIE** next;
+	int val;	// nó terminal (1) ou não-terminal(0)
+	TRIE** next;	// vet de nós de 2 posições
 };
 
 TRIE* create() {
@@ -52,7 +52,7 @@ TRIE* deleting(TRIE* t, char* key, int d, int* flag) {
 
 	if (t->val != 0) return t;
 	for (int i = 0; i < 2; ++i)
-		if (t->next[i] != 0)
+		if (t->next[i] != NULL)
 			return t;
 
 	return NULL;
