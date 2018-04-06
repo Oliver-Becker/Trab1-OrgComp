@@ -69,18 +69,25 @@ int delete_key(TRIE* t, char* key) {
 	return d;
 }
 
-int searching(TRIE* t, char* key, int d) {
-	if (t == NULL) return 0;
+int searching(TRIE* t, char* key, int* d) {
+	if (t == NULL) {
+		(*d)--;
+		return 0;
+	}
 		
-	if (key[d] == '\0')
+	if (key[*d] == '\0')
 		return t->val;
 
-	int number = key[d] - '0';
-	return searching(t->next[number], key, d+1);
+	int number = key[(*d)++] - '0';
+	return searching(t->next[number], key, d);
 }
 
 int search_key(TRIE* t, char* key) {
-	return searching(t, key, 0);
+	int d = 0;
+	int flag = searching(t, key, &d);
+	if (flag == 0)
+		return -d;
+	return d;
 }
 
 int validade_input(char* key) {
@@ -107,18 +114,26 @@ int main() {
 		scanf("%d", &op);
 		switch (op) {
 			case 1:
+				printf("Digite o binário para inserção: ");
 				scanf("%s", key);
 				while (strcmp(key, "-1") != 0) {
-					if (validade_input(key))
-						printf("inserindo %d\n", insert_key(t, key));
-					else {
+					if (validade_input(key)) {
+						aux = insert_key(t, key);
+						if (aux == 0)
+							printf("Chave repetida. Inserção não permitida.\n\n");
+						else
+							printf("Chave inserida com sucesso.\n\n");
+					} else {
 						printf("Chave inválida. Insira somente números bi");
-						printf("nários (ou -1 retorna ao menu).\n");
+						printf("nários (ou -1 retorna ao menu).\n\n");
 					}
+					printf("Digite o binário para inserção: ");
 					scanf("%s", key);
 				}
+				printf("Retornando ao menu.\n\n");
 				break;
 			case 2:
+				printf("Digite o binário para remoção: ");
 				scanf("%s", key);
 				while (strcmp(key, "-1") != 0) {
 					if (validade_input(key)) {
@@ -133,28 +148,44 @@ int main() {
 						for (int i = 0; i < aux; ++i) {
 							(key[i] == '0') ? printf(", esq") : printf(", dir");
 						}
-						printf("\n");
+						printf("\n\n");
 					} else {
 						printf("Chave inválida. Insira somente números bi");
-						printf("nários (ou -1 retorna ao menu).\n");
+						printf("nários (ou -1 retorna ao menu).\n\n");
 					}
+					printf("Digite o binário para remoção: ");
 					scanf("%s", key);
 				}
+				printf("Retornando ao menu.\n\n");
 				break;
 			case 3:
+				printf("Digite o binário para busca: ");
 				scanf("%s", key);
 				while (strcmp(key, "-1") != 0) {
-					if (validade_input(key))
-						printf("buscando %d\n", search_key(t, key));
-					else {
+					if (validade_input(key)) {
+						aux = search_key(t, key);
+						if (aux <= 0) {
+							printf("Chave não encontrada na árvore: -1\n");
+							aux = -aux;
+						} else
+							printf("Chave encontrada na árvore: %s\n", key);
+
+						printf("Caminho percorrido: raiz");
+						for (int i = 0; i < aux; ++i) {
+							(key[i] == '0') ? printf(", esq") : printf(", dir");
+						}
+						printf("\n\n");
+					} else {
 						printf("Chave inválida. Insira somente números bi");
-						printf("nários (ou -1 retorna ao menu).\n");
+						printf("nários (ou -1 retorna ao menu).\n\n");
 					}
+					printf("Digite o binário para busca: ");
 					scanf("%s", key);
 				}
+				printf("Retornando ao menu.\n\n");
 				break;
 			case 4:
-				printf("Visualização? Ops...\n");
+				printf("Visualização? Ops...\n\n");
 				break;
 			case 5:
 				break;
