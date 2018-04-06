@@ -37,17 +37,20 @@ int insert_key(TRIE* t, char* key) {
 	return flag;
 }
 
-TRIE* deleting(TRIE* t, char* key, int d, int* flag) {
-	if (t == NULL) return NULL;
+TRIE* deleting(TRIE* t, char* key, int* d, int* flag) {
+	if (t == NULL) {
+		(*d)--;
+		return NULL;
+	}
 
-	if (key[d] == '\0') {
+	if (key[*d] == '\0') {
 		if (t->val == 1)
 			*flag = 1;
 		t->val = 0;
 	}
 	else {
-		int number = key[d] - '0';
-		t->next[number] = deleting(t->next[number], key, d+1, flag);
+		int number = key[(*d)++] - '0';
+		t->next[number] = deleting(t->next[number], key, d, flag);
 	}
 
 	if (t->val != 0) return t;
@@ -59,9 +62,11 @@ TRIE* deleting(TRIE* t, char* key, int d, int* flag) {
 }
 
 int delete_key(TRIE* t, char* key) {
-	int flag = 0;
-	t = deleting(t, key, 0, &flag);
-	return flag;
+	int flag = 0, d = 0;
+	t = deleting(t, key, &d, &flag);
+	if (flag == 0)
+		return -d;
+	return d;
 }
 
 int searching(TRIE* t, char* key, int d) {
@@ -93,9 +98,10 @@ int main() {
 
 	int op;
 	char key[16];
+	int aux;
 
 	do {
-		printf("1- Inserção,\n2- Remoção,\n3- Busca\n4- Visualização\n5- Fim\n");
+		printf("1- Inserção\n2- Remoção\n3- Busca\n4- Visualização\n5- Fim\n");
 		printf("\nEscolha uma opção (1 a 5):");
 
 		scanf("%d", &op);
@@ -115,9 +121,20 @@ int main() {
 			case 2:
 				scanf("%s", key);
 				while (strcmp(key, "-1") != 0) {
-					if (validade_input(key))
-						printf("deletando %d\n", delete_key(t, key));
-					else {
+					if (validade_input(key)) {
+						aux = delete_key(t, key);
+						if (aux <= 0) {
+							printf("Chave não encontrada na árvore: -1\n");
+							aux = -aux;
+						} else
+							printf("Chave encontrada na árvore: %s\n", key);
+
+						printf("Caminho percorrido: raiz");
+						for (int i = 0; i < aux; ++i) {
+							(key[i] == '0') ? printf(", esq") : printf(", dir");
+						}
+						printf("\n");
+					} else {
 						printf("Chave inválida. Insira somente números bi");
 						printf("nários (ou -1 retorna ao menu).\n");
 					}
