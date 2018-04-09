@@ -271,7 +271,7 @@ caminhobusca2:
 	sub $t2, $t2, '0'
 	addi $t0, $t0, 1 #atualiza-se o ponteiro, pq nao precisa mais da string
 	addi $t8, $t8, 1 #atualiza-se o counter
-	beq $t9, $t8, fimcaminho #acaba a impressao, pois o count se igualou ao numero de digitos da busca
+	bge $t8, $t9, fimcaminho #acaba a impressao, pois o count se igualou ao numero de digitos da busca
 	beq $t2, $zero, imprimeesq
 	beq $t2, 1, imprimedir	
 	
@@ -325,6 +325,8 @@ remove:
 	li $s0, 0		#flag = 0
 	li $s1, 0		#count = 0
 	jal removendo
+	
+	add $s1, $s1, 1		#count++;
 	
 	move $s4, $a1
 	move $t9, $s1
@@ -418,7 +420,7 @@ loop_:
 noNulo_:
 	addi $a0, $a0, 4		#no = no + 1;
 	addi $t5, $t5, 1		#i++;
-					#}
+	j loop_				#}
 fimLoop_:
 	
 retornaNulo_:
